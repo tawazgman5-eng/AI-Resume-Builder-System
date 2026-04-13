@@ -1,41 +1,53 @@
-# AI Resume Builder & Scanner System
+# 🤖 AI Resume Builder & Scanner System
 
 ## 📌 Overview
-The AI Resume Builder & Scanner System is a web-based application that helps users create professional, ATS-compliant resumes and analyze their compatibility with job descriptions using AI techniques.
+The AI Resume Builder & Scanner System is a web-based application that helps users create professional, ATS-compliant resumes and evaluate their compatibility with job descriptions using Artificial Intelligence and Natural Language Processing (NLP).
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
 ### 📝 Resume Builder
 - Create structured and professional resumes
-- Multiple sections (Education, Skills, Experience, etc.)
-- ATS-friendly formatting
+- Multiple sections: Education, Skills, Experience, Projects
+- ATS-compliant formatting
 
 ### 🤖 AI-Powered Suggestions
-- Generates summaries, skills, and content
-- Helps improve resume quality
+- Generates summaries and skills
+- Enhances resume content automatically
+- Improves job relevance
 
-### 📄 Resume Scanner
+### 📊 Resume Scanner
 - Upload resume files
-- Compare against job descriptions
-- Match scoring and recommendations
+- Compare with job descriptions
+- Match scoring system
+- Smart recommendations
+
+### 🔐 Authentication System
+- User registration and login
+- Secure access to user data
 
 ---
 
 ## 🛠️ Technologies Used
 
-- **Backend:** Python (Flask)
-- **Database:** MySQL
-- **Frontend:** HTML, CSS, JavaScript
-- **AI/NLP:** NLTK
-- **Tools:** WampServer / Localhost
+### 🔹 Backend
+- Python (Flask)
+
+### 🔹 Frontend
+- HTML, CSS, JavaScript
+
+### 🔹 Database
+- MySQL
+
+### 🔹 AI / Machine Learning
+- NLTK
+- TF-IDF Vectorizer
+- Machine Learning Models (.pkl)
 
 ---
 
 ## 📂 Project Structure
-
-```bash 
 AI-Resume-Builder-System/
 │
 ├── app.py # Main Flask application
@@ -47,23 +59,30 @@ AI-Resume-Builder-System/
 ├── database.sql # Database schema
 ├── requirements.txt # Dependencies
 └── README.md
-
 ---
 
 ## ⚙️ Installation Guide
 
 ### 1️⃣ Clone the repository
+
 git clone https://github.com/tawazgman5-eng/AI-Resume-Builder-System.git
 
+
 ### 2️⃣ Navigate into the project
+
 cd AI-Resume-Builder-System
 
+
 ### 3️⃣ Create virtual environment (optional but recommended)
+
 python -m venv venv
 venv\Scripts\activate
 
+
 ### 4️⃣ Install dependencies
+
 pip install -r requirements.txt
+
 
 ### 5️⃣ Setup Database
 - Open phpMyAdmin
@@ -73,6 +92,7 @@ pip install -r requirements.txt
 ### 6️⃣ Run the application
 
 python app.py
+
 
 ### 7️⃣ Open in browser
 
@@ -105,6 +125,5 @@ http://127.0.0.1:5000
 ---
 
 ## 📬 Contact
-- Email: your_email@example.com
+- Email: tawazsatiyi@outlook.com
 - GitHub: https://github.com/tawazgman5-eng
-
