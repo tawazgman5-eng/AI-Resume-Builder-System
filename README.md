@@ -1,18 +1,18 @@
-# 🤖 AI Resume Builder & Scanner System
+#  AI Resume Builder & Scanner System
 
-## 📌 Overview
+##  Overview
 The AI Resume Builder & Scanner System is a web-based application that helps users create professional, ATS-compliant resumes and evaluate their compatibility with job descriptions using Artificial Intelligence and Natural Language Processing (NLP).
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 ### 📝 Resume Builder
 - Create structured and professional resumes
 - Multiple sections: Education, Skills, Experience, Projects
 - ATS-compliant formatting
 
-### 🤖 AI-Powered Suggestions
+###  AI-Powered Suggestions
 - Generates summaries and skills
 - Enhances resume content automatically
 - Improves job relevance
@@ -119,7 +119,7 @@ http://127.0.0.1:5000
 
 ---
 
-## 👨‍💻 Author
+## Author
 **Tawanda Satiyi**
 
 ---
