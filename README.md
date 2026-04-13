@@ -35,41 +35,76 @@ The AI Resume Builder & Scanner System is a web-based application that helps use
 
 ## 📂 Project Structure
 
-```bash
-app.py              # Main Flask application
-templates/          # HTML files
-static/             # CSS, JS, assets
-database.sql        # Database schema
-uploads/            # Uploaded resumes
+```bash 
+AI-Resume-Builder-System/
+│
+├── app.py # Main Flask application
+├── ai_engine.py # AI processing logic
+├── ai_suggestions.py # AI suggestions module
+├── auth/ # Authentication system
+├── templates/ # HTML files
+├── static/ # CSS, JS, assets
+├── database.sql # Database schema
+├── requirements.txt # Dependencies
+└── README.md
 
 ---
 
 ## ⚙️ Installation Guide
-1. Clone the repository
-git clone https://github.com/USERNAME/AI-Resume-Builder-System.git
-2. Navigate into the project
+
+### 1️⃣ Clone the repository
+git clone https://github.com/tawazgman5-eng/AI-Resume-Builder-System.git
+
+### 2️⃣ Navigate into the project
 cd AI-Resume-Builder-System
-3. Install dependencies
+
+### 3️⃣ Create virtual environment (optional but recommended)
+python -m venv venv
+venv\Scripts\activate
+
+### 4️⃣ Install dependencies
 pip install -r requirements.txt
-4. Set up database
-Create MySQL database
-Import database.sql
-5. Run the application
+
+### 5️⃣ Setup Database
+- Open phpMyAdmin
+- Create a database
+- Import `database.sql`
+
+### 6️⃣ Run the application
+
 python app.py
-6. Open in browser
+
+### 7️⃣ Open in browser
+
 http://127.0.0.1:5000
 
+
 ---
+
 ## 📸 Screenshots
-🔹 Resume Builder Interface
 
-🔹 Resume Analysis
+### 🔹 Resume Builder Interface
+![Resume Builder](screenshots/resume-builder.png)
 
-🎯 Future Improvements
-Deploy system online
-Add more AI models
-Improve UI/UX design
----                                                                        
-## Author
+### 🔹 Resume Analysis
+![Resume Analysis](screenshots/resume-analysis.png)
 
--Tawanda Satiyi
+---
+
+## 🎯 Future Improvements
+- Deploy system online (Render / Heroku)
+- Improve AI accuracy
+- Add multiple resume templates
+- Enhance UI/UX design
+
+---
+
+## 👨‍💻 Author
+**Tawanda Satiyi**
+
+---
+
+## 📬 Contact
+- Email: your_email@example.com
+- GitHub: https://github.com/tawazgman5-eng
+
