@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Resume Template 4 - Professional Single Column</title>
+
+<style>
+body {
+    font-family: "Times New Roman", serif;
+    font-size: 11pt;
+    margin: 0;
+    padding: 30px 50px;
+    line-height: 1.45;
+    width: 8.5in;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+}
+
+.header h1 {
+    font-size: 20pt;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.contact-info {
+    font-size: 10pt;
+    color: #444;
+    margin-top: 6px;
+}
+
+.contact-info span {
+    margin-right: 10px;
+}
+
+section {
+    margin-bottom: 18px;
+}
+
+.section-title {
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 8px;
+}
+
+.item-block {
+    margin-bottom: 10px;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.item-subheader {
+    font-style: italic;
+    font-size: 10pt;
+    margin-bottom: 6px;
+}
+
+.item-details ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.list-group p {
+    margin: 4px 0;
+}
+.icon {
+    font-weight: bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+{% if resume.name %}
+<h1>{{ resume.name }}</h1>
+{% endif %}
+
+<div class="contact-info">
+
+{% if resume.phone %}
+<span><span class="icon">📞</span> {{ resume.phone }}</span>
+{% endif %}
+
+{% if resume.email %}
+<span><span class="icon">✉</span> {{ resume.email }}</span>
+{% endif %}
+
+{% if resume.address %}
+<span><span class="icon">📍</span> {{ resume.address }}</span>
+{% endif %}
+
+{% if resume.job_title %}
+<span><strong>| {{ resume.job_title }}</strong></span>
+{% endif %}
+
+</div>
+</div>
+
+
+{% if resume.summary %}
+<section>
+<div class="section-title">Professional Summary</div>
+<p>{{ resume.summary }}</p>
+</section>
+{% endif %}
+
+
+{% if cleaned.experience %}
+<section>
+<div class="section-title">Work Experience</div>
+
+{% for exp in cleaned.experience %}
+<div class="item-block">
+
+<div class="item-header">
+<span>{{ exp.title }}</span>
+<span>{{ exp.start }} - {{ exp.end }}</span>
+</div>
+
+<p class="item-subheader">{{ exp.company }} {% if exp.location %}| {{ exp.location }}{% endif %}</p>
+
+{% if exp.description %}
+<div class="item-details">
+<ul>
+{% for detail in exp.description.split('\n') if detail.strip() %}
+<li>{{ detail }}</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+
+</div>
+{% endfor %}
+
+</section>
+{% endif %}
+
+
+{% if cleaned.education %}
+<section>
+<div class="section-title">Education</div>
+
+{% for edu in cleaned.education %}
+<div class="item-block">
+
+<div class="item-header">
+<span>{{ edu.qualification }}</span>
+<span>{{ edu.start }} - {{ edu.end }}</span>
+</div>
+
+<p class="item-subheader">{{ edu.institution }}</p>
+
+</div>
+{% endfor %}
+
+</section>
+{% endif %}
+
+
+{% if cleaned.skills or cleaned.languages or cleaned.interests %}
+<section>
+<div class="section-title">Skills, Languages & Interests</div>
+
+{% if cleaned.skills %}
+<p><strong>Skills:</strong> {{ cleaned.skills | join(', ') }}</p>
+{% endif %}
+
+{% if cleaned.languages %}
+<p><strong>Languages:</strong> {{ cleaned.languages | join(', ') }}</p>
+{% endif %}
+
+{% if cleaned.interests %}
+<p><strong>Interests:</strong> {{ cleaned.interests | join(', ') }}</p>
+{% endif %}
+
+</section>
+{% endif %}
+
+
+{% if cleaned.references %}
+<section>
+<div class="section-title">References</div>
+<p style="font-style: italic;">Available upon request.</p>
+</section>
+{% endif %}
+
+</body>
+</html>

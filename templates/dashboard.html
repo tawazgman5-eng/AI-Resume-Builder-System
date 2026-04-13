@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ResumePro | Dashboard</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<!-- ======================
+     TOP NAVIGATION BAR
+     ====================== -->
+<nav class="topbar">
+  <div class="brand">
+    <i class="fa-solid fa-briefcase"></i> ResumePro
+  </div>
+
+  <div class="user-panel">
+    <span>Welcome, <strong>{{ session.user_name }}</strong></span>
+    <a href="/logout" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+  </div>
+</nav>
+
+<!-- ======================
+     MAIN DASHBOARD AREA
+     ====================== -->
+<main class="dashboard">
+
+  <h1>Your Dashboard</h1>
+  <p class="subtitle">Quick access to everything you need</p>
+
+  <!-- DASHBOARD CARDS -->
+  <div class="card-grid">
+
+    <!-- BUILD RESUME -->
+    <div class="dash-card" onclick="location.href='{{ url_for('build_resume') }}'">
+      <i class="fa-solid fa-file-lines"></i>
+      <h3>Resume Builder</h3>
+      <p>Create or edit your resumes</p>
+    </div>
+
+    <!-- RESUME SCANNER -->
+   <div class="dash-card" onclick="location.href='/resume-scanner'">
+      <i class="fa-solid fa-magnifying-glass-chart"></i>
+      <h3>Resume Scanner</h3>
+      <p>Scan resumes & match jobs</p>
+    </div>
+
+    <!-- RESUME HISTORY -->
+    <div class="dash-card" onclick="location.href='/my-resumes'">
+      <i class="fa-solid fa-folder-open"></i>
+      <h3>Resume History</h3>
+      <p>View saved versions</p>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="dash-card" onclick="location.href='/profile'">
+      <i class="fa-solid fa-user-gear"></i>
+      <h3>My Profile</h3>
+      <p>Personal info & settings</p>
+    </div>
+
+    <!-- AI SUMMARY -->
+    <div class="dash-card" onclick="location.href='{{ url_for('build_resume') }}#summary'">
+      <i class="fa-solid fa-brain"></i>
+      <h3>AI Summary</h3>
+      <p>Generate a professional summary</p>
+    </div>
+
+    <!-- FUTURE FEATURES -->
+    <div class="dash-card coming-soon">
+      <i class="fa-solid fa-gear"></i>
+      <h3>More Tools</h3>
+      <p>Coming soon...</p>
+    </div>
+
+      <a href="{{ url_for('resume_tool') }}" class="btn">Standalone Resume Generator</a>
+
+
+  </div>
+
+</main>
+
+</body>
+</html>

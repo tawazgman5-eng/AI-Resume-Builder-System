@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | ResumePro</title>
+
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="icon" href="/static/favicon.ico">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0A2540, #1E3C72);
+}
+
+.login-container {
+  width: 380px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  padding: 30px;
+  animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.logo {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1E40AF;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 1px #2563EB44;
+}
+
+.login-btn {
+  width: 100%;
+  background: #2563EB;
+  color: white;
+  padding: 12px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.login-btn:hover {
+  background: #1E40AF;
+}
+
+.links {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.links a {
+  color: #2563EB;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.footer-text {
+  margin-top: 18px;
+  font-size: 12px;
+  text-align: center;
+  color: #888;
+}
+  .reset-box {
+  max-width: 420px;
+  margin: 100px auto;
+  background: #ffffff;
+  padding: 30px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.reset-box h2 {
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.link-container {
+  margin: 20px 0;
+}
+
+.reset-link {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.reset-link:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+.note {
+  font-size: 13px;
+  color: #777;
+  margin-top: 15px;
+}
+
+.back-btn {
+  display: block;
+  margin-top: 20px;
+  text-decoration: none;
+  color: #555;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="login-container">
+
+  <div class="logo">ResumePro</div>
+  <div class="tagline">AI-Based Resume Builder and Scanner</div>
+
+  <form method="POST">
+
+    <div class="input-group">
+      <i class="fa-solid fa-envelope"></i>
+      <input name="email" type="email" placeholder="Email Address" required>
+    </div>
+
+    <div class="input-group">
+      <i class="fa-solid fa-lock"></i>
+      <input name="password" type="password" placeholder="Password" required>
+    </div>
+
+    <button class="login-btn" type="submit">
+      <i class="fa-solid fa-right-to-bracket"></i> Login
+    </button>
+
+  </form>
+
+  <div class="links">
+    <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+    <a href="/register">Create account</a>
+  </div>
+
+  <div class="footer-text">
+    © 2025 ResumePro — Smart Careers Start Here
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      padding: 80px 20px 40px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      opacity: 0.85;
+    }
+
+    /* Container */
+    .container {
+      max-width: 450px;
+      margin: -40px auto 40px;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: #555;
+      transition: 0.3s;
+    }
+
+    .tab.active {
+      color: #1e3c72;
+      border-bottom: 3px solid #1e3c72;
+    }
+
+    /* Form */
+    form input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 12px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background: #1e3c72;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2a5298;
+    }
+
+    .login-link {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .login-link a {
+      color: #1e3c72;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .container {
+        margin: -20px 20px 20px;
+        padding: 30px;
+      }
+      .hero h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Join Resume Builder</h1>
+    <p>Create your professional resume in minutes</p>
+  </section>
+
+  <!-- Register Form Container -->
+  <div class="container">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active">Register</div>
+      <div class="tab" onclick="window.location.href='/login'">Login</div>
+    </div>
+
+    <!-- Form -->
+    <form id="registerForm" method="POST">
+      <input type="text" name="name" placeholder="Full Name" required>
+      <small id="nameHint" style="color:red;"></small>
+
+      <input type="email" name="email" placeholder="Email" required>
+      <small id="emailHint" style="color:red;"></small>
+
+      <input type="password" name="password" id="password" placeholder="Password" required>
+      <div class="strength-meter" style="height:6px; background:#ddd; border-radius:3px; margin-top:5px;">
+        <span id="passwordStrength" style="display:block; height:100%; width:0%; border-radius:3px;"></span>
+      </div>
+      <small id="passwordHint" style="color:red;"></small>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="login-link">
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </div>
+
+<script>
+const form = document.getElementById('registerForm');
+const nameInput = form.name;
+const emailInput = form.email;
+const passwordInput = form.password;
+
+const nameHint = document.getElementById('nameHint');
+const emailHint = document.getElementById('emailHint');
+const passwordHint = document.getElementById('passwordHint');
+const passwordStrengthBar = document.getElementById('passwordStrength');
+
+// ---- LIVE VALIDATION HINTS ----
+nameInput.addEventListener('input', () => {
+  const val = nameInput.value.trim();
+  if (!/^[A-Za-z\s]+$/.test(val)) {
+    nameHint.textContent = "❌ Only letters and spaces allowed.";
+  } else if (val.length < 3) {
+    nameHint.textContent = "❌ Must be at least 3 characters.";
+  } else {
+    nameHint.textContent = "✅ Looks good";
+  }
+});
+
+emailInput.addEventListener('input', () => {
+  const val = emailInput.value.trim();
+  const emailPattern = /^[A-Za-z][A-Za-z0-9._-]*@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(val)) {
+    emailHint.textContent = "❌ Enter a valid email with letters before @ and not numbers only";
+  } else {
+    emailHint.textContent = "✅ Looks good";
+  }
+});
+
+passwordInput.addEventListener('input', () => {
+  const val = passwordInput.value.trim();
+
+  // ---- PASSWORD STRENGTH ----
+  let strength = 0;
+  if (val.length >= 6) strength++;
+  if (/[A-Za-z]/.test(val)) strength++;
+  if (/\d/.test(val)) strength++;
+  if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+  if (strength <= 1) {
+    passwordStrengthBar.style.width = '25%';
+    passwordStrengthBar.style.background = '#ff4b5c';
+    passwordHint.textContent = "Weak password";
+  } else if (strength === 2 || strength === 3) {
+    passwordStrengthBar.style.width = '60%';
+    passwordStrengthBar.style.background = '#ffa500';
+    passwordHint.textContent = "Medium strength";
+  } else if (strength === 4) {
+    passwordStrengthBar.style.width = '100%';
+    passwordStrengthBar.style.background = '#4caf50';
+    passwordHint.textContent = "Strong password";
+  }
+});
+
+// ---- FORM SUBMIT VALIDATION ----
+form.addEventListener('submit', e => {
+  const nameVal = nameInput.value.trim();
+  const emailVal = emailInput.value.trim();
+  const passwordVal = passwordInput.value.trim();
+
+  // Full Name
+  if (!/^[A-Za-z\s]+$/.test(nameVal) || nameVal.length < 3) {
+    alert("❌ Full Name invalid. Only letters and spaces allowed, min 3 chars.");
+    e.preventDefault();
+    return;
+  }
+
+  // Email: letters before @, no numbers-only
+  if (!/^[A-Za-z][A-Za-z0-9._-]*@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+    alert("❌ Email invalid. Must start with letters and not numbers-only before @.");
+    e.preventDefault();
+    return;
+  }
+
+  // Password: at least 6 chars, letters, number, special char, not numbers-only
+  if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/.test(passwordVal)) {
+    alert("❌ Password must be at least 6 characters, include letters, numbers and a special character.");
+    e.preventDefault();
+    return;
+  }
+
+});
+</script>
+</body>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ResumePro | Resume Scanner</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- MAIN THEME -->
+  <link rel="stylesheet" href="/static/css/scanner_ui.css">
+</head>
+
+<body>
+
+<!-- =====================
+     TOP BAR
+     ===================== -->
+<header class="scanner-topbar">
+  <div class="brand">
+    <i class="fa-solid fa-magnifying-glass-chart"></i> Resume Scanner
+  </div>
+  <a href="/dashboard" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Dashboard
+  </a>
+</header>
+
+<!-- =====================
+     MAIN SCANNER LAYOUT
+     ===================== -->
+<main class="scanner-container">
+
+  <!-- LEFT PANEL -->
+  <section class="left-panel">
+
+    <h2>📄 Job Description</h2>
+    <textarea id="job_description" placeholder="Paste job description here..."></textarea>
+
+    <div class="file-upload">
+      <label>
+        <i class="fa-solid fa-file-pdf"></i> Upload Job Description
+        <input type="file" id="jd_file" accept=".pdf,.docx" hidden>
+      </label>
+      <span id="jdFileStatus">No file chosen</span>
+    </div>
+
+  </section>
+
+  <!-- RIGHT PANEL -->
+  <section class="right-panel">
+
+    <h2>📤 Upload Resume</h2>
+
+    <div class="upload-card">
+      <input type="file" id="resumeFileScan" accept=".pdf,.docx">
+
+     <button class="btn-primary" id="scan_button">
+  <i class="fa-solid fa-microscope"></i> Start AI Scan
+</button>
+
+      <p id="resumeStatus">No resume selected</p>
+    </div>
+
+    <!-- MATCH BAR -->
+    <div id="matchScoreBar">
+      <div id="matchScoreFill"></div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- =====================
+     RESULTS
+     ===================== -->
+<section id="scanResult" class="results-card"></section>
+
+<script>
+
+/* FILE STATUS INDICATORS */
+document.getElementById("resumeFileScan").addEventListener("change", function() {
+  document.getElementById("resumeStatus").innerText = this.files.length ? "✅ Resume selected" : "No resume selected";
+});
+
+document.getElementById("jd_file").addEventListener("change", function() {
+  document.getElementById("jdFileStatus").innerText = this.files.length ? "✅ JD file selected" : "No file chosen";
+});
+
+
+/* MAIN AI SCANNER FUNCTION (Handles File Uploads using FormData) */
+function scanResume() {
+
+  const jdText  = document.getElementById("job_description");
+  const jdFile  = document.getElementById("jd_file");
+  const resume  = document.getElementById("resumeFileScan");
+  const resultBox = document.getElementById("scanResult");
+  const scanBtn = document.getElementById("scan_button");
+
+  const originalText = scanBtn.innerText;
+
+  let formData = new FormData();
+
+  // --- VALIDATION
+  if (!jdText.value.trim() && jdFile.files.length === 0) {
+    alert("Paste job description text or upload a JD file.");
+    return;
+  }
+
+  if (resume.files.length === 0) {
+    alert("Upload a resume file.");
+    return;
+  }
+
+  // --- COLLECT DATA
+  if (jdText.value.trim()) {
+    // Priority 1: Pasted Text
+    formData.append("job_description_text", jdText.value.trim());
+  } else if (jdFile.files.length > 0) {
+    // Priority 2: Uploaded File
+    formData.append("jd_file", jdFile.files[0]);
+  }
+
+  // Resume file is always required
+  formData.append("resume_file", resume.files[0]);
+
+  // --- UI Update
+  scanBtn.innerText = "Scanning... (AI Processing)";
+  scanBtn.disabled = true;
+  resultBox.innerHTML = '<h3>⏳ AI is processing files...</h3><p>This may take a few seconds.</p>';
+  resultBox.style.display = "block";
+
+
+  // --- AI REQUEST (Using FormData for files)
+  fetch("/scan_resume", {
+    method: "POST",
+    body: formData // Note: No 'Content-Type' header needed for FormData
+  })
+  .then(res => {
+      // Check for non-200 status codes
+      if (!res.ok) {
+          // Attempt to read the error body
+          return res.json().then(err => { throw new Error(err.error || `HTTP Error ${res.status}`); });
+      }
+      return res.json();
+  })
+  .then(data => {
+
+    if (data.error) {
+        resultBox.innerHTML = `<h3 style="color:red">Scan Error:</h3><p>${data.error}</p>`;
+        return;
+    }
+
+    // --- DISPLAY RICH AI RESULTS ---
+    let scoreColor;
+    if (data.match_score >= 80) { scoreColor = "green"; }
+    else if (data.match_score >= 50) { scoreColor = "#e69900"; }
+    else { scoreColor = "red"; }
+
+    resultBox.innerHTML = `
+        <h3 style="color: ${scoreColor}">🎯 AI Match Score: ${data.match_score}%</h3>
+        <p><strong>Hiring Manager's Analysis:</strong> ${data.analysis}</p>
+
+        <div class="analysis-section">
+            <h4>✅ Key Strengths Matched:</h4>
+            <p style="color: green;">${data.matched_keywords.join(", ")}</p>
+        </div>
+
+        <div class="analysis-section">
+            <h4>❌ Critical Gaps (Missing Skills):</h4>
+            <p style="color: red;">${data.missing_keywords.join(", ")}</p>
+        </div>
+
+        <div class="analysis-section recommendation-box" style="border: 1px solid #ddd; padding: 10px; margin-top: 15px;">
+            <h4>💡 Actionable Recommendation:</h4>
+            <p>${data.suggestions}</p>
+        </div>
+    `;
+  })
+  .catch(err => {
+    console.error("Fetch Error:", err);
+    resultBox.innerHTML = `<h3 style="color:red">Connection Error</h3><p>Details: ${err.message}</p>`;
+  })
+  .finally(() => {
+    scanBtn.innerText = originalText;
+    scanBtn.disabled = false;
+  });
+}
+
+
+// --- ATTACH FUNCTION TO BUTTON (THE FIX FOR UNRESPONSIVENESS) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const scanButton = document.getElementById('scan_button');
+    if(scanButton) {
+        scanButton.onclick = scanResume;
+    }
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Main Theme -->
+<link rel="stylesheet" href="/static/css/resume_ui.css">
+
+  <meta charset="UTF-8">
+  <title>AI Based Resume Builder & Analyzer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { margin-top: 30px; }
+    input, textarea { width: 70%; padding: 6px; margin: 4px 0; }
+    button { margin-top: 6px; padding: 8px 12px; cursor: pointer; }
+    .block { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 6px; }
+    hr { margin: 25px 0; }
+  </style>
+  <link rel="icon" href="/static/favicon.ico">
+
+</head>
+
+<body>
+
+<header>
+  <h1>ResumePro</h1>
+  <button onclick="previewResume()">Preview Resume</button>
+</header>
+
+<section class="hero">
+  <div class="hero-text">
+    <h2>Professional Resume Builder</h2>
+    <p>Create modern resumes, scan job descriptions, and generate AI-powered summaries with a professional design.</p>
+    <div class="hero-cta">
+      <button onclick="document.getElementById('builder').scrollIntoView({behavior:'smooth'})">
+        Get Started
+      </button>
+    </div>
+  </div>
+</section>
+
+<div id="builder" class="container builder-grid">
+
+  <!-- ============ LEFT PANEL ============ -->
+  <div class="left-panel">
+
+    <h1>🧠 AI Based Resume Builder & Analyzer</h1>
+    <hr>
+
+
+    <!-- PERSONAL INFO -->
+    <section class="card">
+      <h2>Personal Information</h2>
+
+      <input type="text" id="name" placeholder="Full Name">
+      <input type="email" id="email" placeholder="Email Address">
+      <input type="text" id="phone" placeholder="Phone Number">
+      <input type="text" id="address" placeholder="Address">
+      <input type="text" id="job_title" placeholder="Job Title">
+
+      <button onclick="getSuggestions()">✨ Get AI Suggestions</button>
+    </section>
+
+
+    <!-- SUMMARY -->
+    <section class="card">
+      <h2>Professional Summary</h2>
+      <textarea id="summary" rows="4" placeholder="Write or generate your summary..."></textarea><br>
+      <button type="button" onclick="generateAISummary()">🧠 AI Generate Summary</button>
+    </section>
+
+
+    <!-- EXPERIENCE -->
+    <section class="card">
+      <h2>Work Experience</h2>
+      <div id="experience-container"></div>
+      <button onclick="addExperience()">➕ Add Experience</button>
+    </section>
+
+
+    <!-- EDUCATION -->
+    <section class="card">
+      <h2>Education</h2>
+      <div id="education-container"></div>
+      <button onclick="addEducation()">➕ Add Education</button>
+    </section>
+
+
+    <!-- SKILLS -->
+    <section class="card">
+      <h2>Skills</h2>
+      <div id="skills-container"></div>
+      <button type="button" onclick="generateSkills()">⚡ AI Suggest Skills</button>
+      <button onclick="addSkill()">➕ Add Skill</button>
+    </section>
+
+
+    <!-- LANGUAGES -->
+    <section class="card">
+      <h2>Languages</h2>
+      <div id="languages-container"></div>
+      <button onclick="addLanguage()">➕ Add Language</button>
+    </section>
+
+
+    <!-- INTERESTS -->
+    <section class="card">
+      <h2>Interests & Hobbies</h2>
+      <div id="interests-container"></div>
+      <button onclick="addInterest()">➕ Add Interest</button>
+    </section>
+
+
+    <!-- REFERENCES -->
+    <section class="card">
+      <h2>References</h2>
+      <div id="references-container"></div>
+      <button onclick="addReference()">➕ Add Reference</button>
+    </section>
+
+
+    <!-- SUBMIT -->
+    <section class="card finalize">
+      <h2>Finalize Resume</h2>
+     <button onclick="if(validatePersonalInfo()) submitResume()">💾 Submit Resume</button>
+      <div id="submit-status"></div>
+      <input type="hidden" id="lastResumeID">
+    </section>
+
+
+    <!-- TEMPLATE -->
+    <!-- ===============================
+     TEMPLATE SELECTOR UI
+================================ -->
+<section id="template-section">
+  <h2>🎨 Choose Your Resume Template</h2>
+  <p class="template-subtitle">Swipe or click to preview and select a design</p>
+
+  <div class="template-slider">
+
+    <button class="nav-btn left" onclick="moveSlide(-1)">❮</button>
+
+    <div class="slider-track" id="sliderTrack">
+
+      <!-- TEMPLATE CARD -->
+      <div class="template-card active" data-template="template1">
+        <img src="/static/templates/template1.png">
+        <h4>Classic</h4>
+      </div>
+
+      <div class="template-card" data-template="template2">
+        <img src="/static/templates/template2.png">
+        <h4>Modern</h4>
+      </div>
+
+      <div class="template-card" data-template="template3">
+        <img src="/static/templates/template3.png">
+        <h4>Professional</h4>
+      </div>
+
+      <div class="template-card" data-template="template4">
+        <img src="/static/templates/template4.png">
+        <h4>Creative</h4>
+      </div>
+
+    </div>
+
+    <button class="nav-btn right" onclick="moveSlide(1)">❯</button>
+
+  </div>
+
+  <div class="template-action">
+    <button onclick="applySelectedTemplate()">
+      ✅ Apply Template
+    </button>
+  </div>
+</section>
+
+    <div id="resume-preview" style="margin-top:20px;"></div>
+
+    <!-- PREVIEW -->
+    <section class="card">
+      <button onclick="previewResume()">👀 Preview</button>
+      <button onclick="downloadResume()">⬇️ Download</button>
+
+      <div id="resumePreview" style="display:none; margin-top:15px;">
+        <iframe id="previewFrame" style="width:100%; height:600px;"></iframe>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ RIGHT PANEL ============ -->
+  <div class="right-panel">
+
+    <!-- UPLOAD -->
+    <div class="card">
+      <h3><i class="fa-solid fa-upload"></i> Upload Resume</h3>
+
+      <div class="upload-box" onclick="document.getElementById('resumeFile').click()">
+        Click to Upload PDF / DOCX
+      </div>
+
+     <div class="upload-box">
+
+  <label class="upload-label">
+    <i class="fas fa-file-upload"></i> Choose Resume File
+    <input type="file" id="resumeFile" accept=".pdf,.docx" hidden onchange="showUploadStatus()">
+  </label>
+
+  <span id="uploadStatus" class="upload-status">No file selected</span>
+  <button class="upload-btn" onclick="uploadAndParseResume()">
+    <i class="fas fa-brain"></i> Upload & Auto-Parse
+  </button>
+
+</div>
+
+    </div>
+
+
+    <!-- RAW TEXT -->
+    <div class="card">
+      <h3>📄 Extracted Resume Text</h3>
+
+      <textarea id="parsedContent" rows="10"></textarea>
+
+      <button onclick="parseResumeContent(document.getElementById('parsedContent').value)">
+        Auto-Fill Fields
+      </button>
+    </div>
+
+
+    <!-- AI -->
+    <div class="card">
+      <h3><i class="fa-solid fa-robot"></i> AI Tools</h3>
+      <button onclick="generateSummary()">✨ Generate Summary</button>
+    </div>
+
+
+    <!-- SCANNER -->
+    <div class="card">
+      <h3>🔍 Resume Scanner</h3>
+
+      <textarea id="job_description" placeholder="Paste job description..."></textarea>
+
+      <input type="file" id="jd_file">
+      <input type="file" id="resumeFileScan">
+
+      <button onclick="scanResume()">Scan Resume</button>
+      <a href="/scanner" class="btn-secondary">Go to AI Job Match Scanner</a>
+
+      <div id="loadingBarWrapper">
+        <div id="loadingBarFill"></div>
+      </div>
+
+      <div id="scanResult"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================================================
+     ============================================================
+     =======================  JAVASCRIPT  ========================
+     ============================================================
+     ============================================================ -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    console.log("generateSkills loaded");
+    console.log("✅ DOM READY");
+
+    document.getElementById("preview-btn").addEventListener("click", function() {
+    let templateId = document.getElementById("template-select").value;
+    if (!templateId) return alert("Please select a template");
+
+    // Option 1: Open in new tab
+    window.open(`/resume/${templateId}`, "_blank");
+
+    // Option 2: Preview in page (using iframe)
+    /*
+    let container = document.getElementById("resume-preview");
+    container.innerHTML = `<iframe src="/resume/${templateId}" width="100%" height="600px"></iframe>`;
+    */
+});
+
+
+    window.submitResume = submitResume;
+    window.addSkill = addSkill;
+    window.addInterest = addInterest;
+    window.addLanguage = addLanguage;
+    window.addReference = addReference;
+    window.uploadAndParse = uploadAndParse;
+
+});
+
+    // ---------- DYNAMIC SECTION LOGIC ----------
+
+    function removeBlock(button) {
+      button.parentElement.remove();
+    }
+
+    function addExperience() {
+      const container = document.getElementById("experience-container");
+      const block = document.createElement("div");
+      block.innerHTML = `
+        <label>Job Title:</label><input type="text" class="exp-title"><br>
+        <label>Company:</label><input type="text" class="exp-company"><br>
+        <label>Location:</label><input type="text" class="exp-location"><br>
+        <label>Start Date:</label><input type="month" class="exp-start"><br>
+        <label>End Date:</label><input type="month" class="exp-end"><br>
+        <label>Description:</label><textarea class="exp-description" rows="3"></textarea><br>
+        <button type="button" onclick="removeBlock(this)">🗑 Remove</button>
+        <hr>`;
+      container.appendChild(block);
+    }
+
+    function addEducation() {
+      const container = document.getElementById("education-container");
+      const block = document.createElement("div");
+      block.innerHTML = `
+        <label>Institution:</label><input type="text" class="edu-institution"><br>
+        <label>Qualification:</label><input type="text" class="edu-qualification"><br>
+        <label>Start Date:</label><input type="month" class="edu-start"><br>
+        <label>End Date:</label><input type="month" class="edu-end"><br>
+        <button type="button" onclick="removeBlock(this)">🗑 Remove</button>
+        <hr>`;
+      container.appendChild(block);
+    }
+
+    function addSkill() {
+    let container = document.getElementById("skills-container");
+
+    let div = document.createElement("div");
+    div.className = "skill-row";
+
+    let input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Enter skill";
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "❌";
+    btn.onclick = () => div.remove();
+
+    div.appendChild(input);
+    div.appendChild(btn);
+    container.appendChild(div);
+}
+
+    function addLanguage() {
+  document.getElementById("languages-container").insertAdjacentHTML("beforeend", `
+      <div>
+          <input type="text" class="language-input" placeholder="Language">
+          <button type="button" onclick="removeBlock(this)">🗑</button>
+      </div>
+  `);
+}
+
+   function addInterest() {
+  document.getElementById("interests-container").insertAdjacentHTML("beforeend", `
+      <div>
+          <input type="text" class="interest-item" placeholder="Interest">
+          <button type="button" onclick="removeBlock(this)">🗑</button>
+      </div>
+  `);
+}
+
+    function addReference() {
+      const container = document.getElementById("references-container");
+      const block = document.createElement("div");
+      block.innerHTML = `
+        <label>Name:</label><input type="text" class="ref-name"><br>
+        <label>Position:</label><input type="text" class="ref-position"><br>
+        <label>Contact:</label><input type="text" class="ref-contact"><br>
+        <button type="button" onclick="removeBlock(this)">🗑 Remove</button>
+        <hr>`;
+      container.appendChild(block);
+    }
+
+    // ---------- PLACEHOLDER CORE FUNCTIONS ----------
+    function getSuggestions(){ alert("AI Suggestions (placeholder)."); }
+    function scanResume(){ alert("Scan Resume (placeholder)."); }
+
+    // ---------- RESUME UPLOAD & AUTO-PARSE ----------
+
+// 🔹 Upload and parse resume file
+function uploadAndParseResume() {
+  const fileInput = document.getElementById("resumeFile");
+  const file = fileInput && fileInput.files[0];
+  if (!file) {
+    alert("Please select a resume file to upload.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // UI feedback
+  const status = document.getElementById("uploadStatus");
+  if (status) status.textContent = "⏳ Uploading & parsing...";
+
+  fetch("http://127.0.0.1:5000/upload_resume", {
+    method: "POST",
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (status) status.textContent = "";
+     if (data.extracted_text) {
+    // Show extracted content in the review panel
+    document.getElementById("parsedContent").value = data.extracted_text;
+
+    // Auto-fill form based on extracted data
+    parseResumeContent(data.extracted_text);
+} else {
+    alert("Unexpected response from server: " + JSON.stringify(data));
+}
+
+    })
+    .catch(err => {
+      if (status) status.textContent = "";
+      console.error("Upload error:", err);
+      alert("Upload failed — check server and console for details.");
+    });
+}
+
+// 🔹 Parse extracted text into structured fields
+
+function parseResumeContent(text) {
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+  const phoneRegex = /(\+?\d{1,3}[-.\s]?)?(\d{2,4}[-.\s]?){2,5}\d{2,4}/;
+  if (!text || text.trim().length === 0) {
+    alert("No extracted content available. Please upload a resume first.");
+    return;
+}
+
+  let name = "", email = "", phone = "", address = "", jobTitle = "";
+  let summary = "";
+  let currentSection = "";
+  let rawExperience = [];
+  let rawEducation = [];
+  let skills = [], languages = [], interests = [], references = [];
+
+  for (let line of lines) {
+    if (!email && emailRegex.test(line)) email = line.match(emailRegex)[0];
+    if (!phone && phoneRegex.test(line)) phone = line.match(phoneRegex)[0];
+    if (!name && /^[A-Z][a-z]+\s[A-Z][a-z]+/.test(line)) name = line;
+    if (line.toLowerCase().includes("road") || line.toLowerCase().includes("street")) address = line;
+
+    if (/summary|profile/i.test(line)) { currentSection = "summary"; continue; }
+    if (/experience|employment/i.test(line)) { currentSection = "experience"; continue; }
+    if (/education/i.test(line)) { currentSection = "education"; continue; }
+    if (/skills|competencies/i.test(line)) { currentSection = "skills"; continue; }
+    if (/language/i.test(line)) { currentSection = "languages"; continue; }
+    if (/interest|hobby/i.test(line)) { currentSection = "interests"; continue; }
+    if (/reference/i.test(line)) { currentSection = "references"; continue; }
+
+    switch (currentSection) {
+      case "summary": summary += line + " "; break;
+      case "experience": rawExperience.push(line); break;
+      case "education": rawEducation.push(line); break;
+      case "skills": skills.push(line.replace(/^[•\-\d.]+\s*/, "")); break;
+      case "languages": languages.push(line); break;
+      case "interests": interests.push(line); break;
+      case "references": references.push(line); break;
+    }
+  }
+
+  // ✅ Auto-fill personal details
+  document.getElementById("name").value = name;
+  document.getElementById("email").value = email;
+  document.getElementById("phone").value = phone;
+  document.getElementById("address").value = address;
+  document.getElementById("summary").value = summary.trim();
+
+  // ✅ EXPERIENCE STRUCTURE PARSER
+  const expContainer = document.getElementById("experience-container");
+  expContainer.innerHTML = "";
+  let currentExp = { title:"", company:"", location:"", start:"", end:"", description:[] };
+
+  rawExperience.forEach(line => {
+    // Detect job title (starts with uppercase & a role word)
+    if (/^(•|\-)?\s*[A-Z].*(Assistant|Engineer|Technician|Manager|Worker|Officer|Supervisor|Operator|Developer)/i.test(line)) {
+      if (currentExp.title) expContainer.appendChild(createExperienceBlock(currentExp));
+      currentExp = { title: line.replace(/^•\s*/, ""), company:"", location:"", start:"", end:"", description:[] };
+    }
+    else if (/(Ltd|Inc|Company|Enterprise|Pvt|Corp|University|College)/i.test(line)) {
+      currentExp.company = line;
+    }
+    else if (/\b(20\d{2}|19\d{2})\b/.test(line) && /–|-|to/.test(line)) {
+      const parts = line.split(/–|-|to/);
+      currentExp.start = parts[0].trim();
+      currentExp.end = parts[1] ? parts[1].trim() : "";
+    }
+    else {
+      currentExp.description.push(line.replace(/^•\s*/, ""));
+    }
+  });
+  if (currentExp.title) expContainer.appendChild(createExperienceBlock(currentExp));
+
+  // ✅ EDUCATION STRUCTURE PARSER
+  const eduContainer = document.getElementById("education-container");
+  eduContainer.innerHTML = "";
+  let currentEdu = { institution:"", qualification:"", start:"", end:"" };
+
+  rawEducation.forEach(line => {
+    if (/(University|College|Institute|High School)/i.test(line)) {
+      if (currentEdu.institution) eduContainer.appendChild(createEducationBlock(currentEdu));
+      currentEdu = { institution: line, qualification:"", start:"", end:"" };
+    }
+    else if (/(Degree|Diploma|Certificate|BSc|MSc|BA|PhD)/i.test(line)) {
+      currentEdu.qualification = line;
+    }
+    else if (/\b(20\d{2}|19\d{2})\b/.test(line) && /–|-|to/.test(line)) {
+      const parts = line.split(/–|-|to/);
+      currentEdu.start = parts[0].trim();
+      currentEdu.end = parts[1] ? parts[1].trim() : "";
+    }
+  });
+  if (currentEdu.institution) eduContainer.appendChild(createEducationBlock(currentEdu));
+
+  // ✅ Fill Skills / Languages / Interests / References
+  fillSimpleList("skills-container", skills);
+  fillSimpleList("languages-container", languages);
+  fillSimpleList("interests-container", interests);
+  fillSimpleList("references-container", references, true);
+
+  alert("🎉 Resume fields parsed into structured format!");
+}
+
+// ------- Helper Builders -------
+function createExperienceBlock(exp) {
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <label>Job Title:</label><input type="text" class="exp-title" value="${exp.title}"><br>
+    <label>Company:</label><input type="text" class="exp-company" value="${exp.company}"><br>
+    <label>Start Date:</label><input type="text" class="exp-start" value="${exp.start}"><br>
+    <label>End Date:</label><input type="text" class="exp-end" value="${exp.end}"><br>
+    <label>Description:</label><textarea class="exp-description" rows="3">${exp.description.join("\n• ")}</textarea><br>
+    <button type="button" onclick="removeBlock(this)">🗑 Remove</button><hr>`;
+  return div;
+}
+
+function createEducationBlock(edu) {
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <label>Institution:</label><input type="text" class="edu-institution" value="${edu.institution}"><br>
+    <label>Qualification:</label><input type="text" class="edu-qualification" value="${edu.qualification}"><br>
+    <label>Start Date:</label><input type="text" class="edu-start" value="${edu.start}"><br>
+    <label>End Date:</label><input type="text" class="edu-end" value="${edu.end}"><br>
+    <button type="button" onclick="removeBlock(this)">🗑 Remove</button><hr>`;
+  return div;
+}
+
+function fillSimpleList(containerId, list, isTextArea=false) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  list.forEach(item => {
+    const div = document.createElement("div");
+    div.innerHTML = isTextArea
+      ? `<textarea rows="2">${item}</textarea><button onclick="removeBlock(this)">🗑</button><hr>`
+      : `<input type="text" value="${item}"><button onclick="removeBlock(this)">🗑</button>`;
+    container.appendChild(div);
+  });
+}
+
+function getSuggestions() {
+  const jobTitle = document.getElementById("job_title").value.trim();
+
+  if (!jobTitle) {
+    alert("Please enter a job title first.");
+    return;
+  }
+
+  fetch("http://127.0.0.1:5000/ai_suggestions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ job_title: jobTitle })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (!data.suggestions) {
+        alert("No suggestions returned.");
+        return;
+      }
+
+      const s = data.suggestions;
+
+      // --------------------
+      // Fill SUMMARY
+      // --------------------
+      document.getElementById("summary").value = s.summary || "";
+
+      // --------------------
+      // Fill SKILLS
+      // --------------------
+      const skillsContainer = document.getElementById("skills-container");
+      skillsContainer.innerHTML = "";
+
+      if (s.skills && Array.isArray(s.skills)) {
+        s.skills.forEach(skill => {
+          const block = document.createElement("div");
+          block.innerHTML = `
+            <input type="text" class="skill-item" value="${skill}">
+            <button type="button" onclick="removeBlock(this)">🗑</button>
+          `;
+          skillsContainer.appendChild(block);
+        });
+      }
+
+       // --------------------
+      // AI GENERATE SKILLS
+      // --------------------
+     function generateSkills() {
+    let jobTitle = document.getElementById("job_title").value;
+
+    if (!jobTitle) {
+        alert("Please enter Job Title first.");
+        return;
+    }
+
+    fetch("/ai/generate-skills", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            job_title: jobTitle
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (!data.skills) {
+            alert("No skills returned");
+            return;
+        }
+
+        let container = document.getElementById("skills-container");
+        container.innerHTML = ""; // Clear existing generated skills
+
+        // Clean and split AI output
+        let lines = data.skills
+            .replace(/\*/g, "")
+            .split("\n")
+            .filter(line => line.trim() !== "");
+
+        lines.forEach(skill => {
+            let div = document.createElement("div");
+            div.className = "skill-row";
+
+            let input = document.createElement("input");
+            input.type = "text";
+            input.value = skill.replace(/^[-•]/, "").trim();
+
+            let btn = document.createElement("button");
+            btn.innerHTML = "❌";
+            btn.onclick = () => div.remove();
+
+            div.appendChild(input);
+            div.appendChild(btn);
+            container.appendChild(div);
+        });
+
+    })
+    .catch(error => {
+        console.error("AI error:", error);
+        alert("Failed to generate skills");
+    });
+}
+
+      // --------------------
+      // Fill INTERESTS / HOBBIES
+      // --------------------
+      const interestsContainer = document.getElementById("interests-container");
+      interestsContainer.innerHTML = "";
+
+      if (s.hobbies && Array.isArray(s.hobbies)) {
+        s.hobbies.forEach(hobby => {
+          const block = document.createElement("div");
+          block.innerHTML = `
+            <input type="text" class="interest-item" value="${hobby}">
+            <button type="button" onclick="removeBlock(this)">🗑</button>
+          `;
+          interestsContainer.appendChild(block);
+        });
+      }
+
+      // --------------------
+      // Fill EXPERIENCE (optional)
+      // --------------------
+      // --------------------
+// Fill EXPERIENCE (Description only)
+// --------------------
+const expContainer = document.getElementById("experience-container");
+
+// Create a fresh experience block
+expContainer.innerHTML = "";
+
+const block = document.createElement("div");
+block.innerHTML = `
+  <label>Job Title:</label><input type="text" class="exp-title"><br>
+  <label>Company:</label><input type="text" class="exp-company"><br>
+  <label>Location:</label><input type="text" class="exp-location"><br>
+  <label>Start Date:</label><input type="month" class="exp-start"><br>
+  <label>End Date:</label><input type="month" class="exp-end"><br>
+  <label>Description:</label>
+  <textarea class="exp-description" rows="3">${s.experience || ""}</textarea><br>
+  <button type="button" onclick="removeBlock(this)">🗑 Remove</button>
+  <hr>
+`;
+expContainer.appendChild(block);
+
+    });
+}
+
+
+ async function submitResume() {
+  if (!validateSummary()) return;
+  if (!validateExperience()) return;
+  if (!validateEducation()) return;
+  if (!validateReferences()) return;
+
+  const exp = Array.from(document.querySelectorAll("#experience-container > div")).map(b => ({
+    title: b.querySelector(".exp-title")?.value || "",
+    company: b.querySelector(".exp-company")?.value || "",
+    location: b.querySelector(".exp-location")?.value || "",
+    start: b.querySelector(".exp-start")?.value || "",
+    end: b.querySelector(".exp-end")?.value || "",
+    description: b.querySelector(".exp-description")?.value || ""
+  }));
+
+  const edu = Array.from(document.querySelectorAll("#education-container > div")).map(b => ({
+    institution: b.querySelector(".edu-institution")?.value || "",
+    qualification: b.querySelector(".edu-qualification")?.value || "",
+    start: b.querySelector(".edu-start")?.value || "",
+    end: b.querySelector(".edu-end")?.value || ""
+  }));
+
+  const refs = Array.from(document.querySelectorAll("#references-container > div")).map(b => ({
+    name: b.querySelector(".ref-name")?.value || "",
+    position: b.querySelector(".ref-position")?.value || "",
+    contact: b.querySelector(".ref-contact")?.value || ""
+  }));
+
+  const skills = [...document.querySelectorAll("input.skill-item")]
+    .map(i => i.value.trim())
+    .filter(v => v !== "");
+
+  const languages = [...document.querySelectorAll("input.language-item")]
+    .map(i => i.value.trim())
+    .filter(v => v !== "");
+
+  const interests = [...document.querySelectorAll("input.interest-item")]
+    .map(i => i.value.trim())
+    .filter(v => v !== "");
+
+  // READ selected template (if user already chose one)
+  const selectedTemplateInput = document.querySelector('input[name="template"]:checked');
+  const template = selectedTemplateInput ? selectedTemplateInput.value : null;
+
+  // optionally include resume_id when editing
+  const resumeIdField = document.getElementById("resume_id") || document.getElementById("lastResumeID");
+  const resume_id = resumeIdField ? (resumeIdField.value || null) : null;
+
+  const resumeData = {
+    resume_id,                // may be null for new resume
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    address: document.getElementById("address").value,
+    job_title: document.getElementById("job_title").value,
+    summary: document.getElementById("summary").value,
+    experience: exp,
+    education: edu,
+    skills: skills,
+    languages: languages,
+    interests: interests,
+    references: refs,
+    template: template        // can be null -> server will use default
+  };
+
+  console.log("FINAL DATA SENT:", resumeData);
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/submit_resume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(resumeData)
+    });
+
+    const data = await response.json();
+
+    if (data.resume_id) {
+      window.lastResumeId = data.resume_id;
+      // If we returned the template saved, log it
+      if (data.template) console.log("Saved template:", data.template);
+
+      alert("✅ Resume Saved");
+
+      // SHOW TEMPLATE SELECTOR (you can keep this flow)
+      document.getElementById("template-section").style.display = "block";
+
+      // populate hidden resume_id input(s)
+      if (document.getElementById("resume_id")) document.getElementById("resume_id").value = data.resume_id;
+      if (document.getElementById("lastResumeID")) document.getElementById("lastResumeID").value = data.resume_id;
+
+    } else {
+      console.log("SERVER ISSUE:", data);
+      alert("Server did not return ID");
+    }
+
+  } catch (err) {
+    console.error("Submit Failed:", err);
+    alert("Submit failed");
+  }
+}
+
+
+async function applyTemplate() {
+
+  const selected = document.querySelector("input[name='template']:checked");
+
+  if (!selected) {
+    alert("Please choose a template");
+    return;
+  }
+
+  if (!window.lastResumeId) {
+    alert("Please submit resume before selecting a template");
+    return;
+  }
+
+  const template = selected.value;
+
+  console.log("📤 Sending template:", template);
+  console.log("📄 Resume ID:", window.lastResumeId);
+
+  const response = await fetch(`/set_template/${window.lastResumeId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ template: template })
+  });
+
+  const data = await response.json();
+
+  console.log("✅ Template saved:", data);
+
+  alert("✅ Template applied successfully");
+}
+
+
+// ✅ PREVIEW RESUME (FIXED)
+async function previewResume() {
+    if (!window.lastResumeId) {
+        alert("Submit the resume first before previewing.");
+        return;
+    }
+
+    document.getElementById("resumePreview").style.display = "block";
+
+    // Load preview from Flask preview route
+    document.getElementById("previewFrame").src =
+        `http://127.0.0.1:5000/preview_resume/${window.lastResumeId}`;
+}
+
+
+// ✅ DOWNLOAD RESUME AS PDF
+async function downloadResume() {
+    if (!window.lastResumeId) {
+        alert("Submit the resume first before downloading.");
+        return;
+    }
+
+    // Ensure latest PDF saved
+    await fetch(`http://127.0.0.1:5000/save_resume_pdf/${window.lastResumeId}`);
+
+    window.location.href =
+        `http://127.0.0.1:5000/download_resume/${window.lastResumeId}`;
+}
+
+function generateResume() {
+      const templateChoice = document.getElementById("template_choice").value;
+      const resumeId = localStorage.getItem("resume_id");
+
+      if (!resumeId) {
+        alert("Please submit a resume first.");
+        return;
+      }
+
+      fetch("/generate_template", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume_id: resumeId, template: templateChoice })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to generate resume");
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "My_Resume.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      })
+      .catch(err => {
+        console.error("Template generation error:", err);
+        alert("Failed to generate resume. Try again.");
+      });
+    }
+ function showUploadStatus() {
+  const input = document.getElementById("resumeFile");
+  const status = document.getElementById("uploadStatus");
+
+  if (input.files.length > 0) {
+    status.innerHTML = `✅ ${input.files[0].name}`;
+    status.classList.add("uploaded");
+  } else {
+    status.innerHTML = "No file selected";
+    status.classList.remove("uploaded");
+  }
+}
+
+ function scanResume() {
+  const jdText = document.getElementById("job_description");
+  const jdFile = document.getElementById("jd_file");
+  const resumeFile = document.getElementById("resumeFileScan");
+  const scanDiv = document.getElementById("scanResult");
+
+  let formData = new FormData();
+
+  // ---- 1. JOB DESCRIPTION INPUT ----
+  if (jdText.value.trim().length > 0) {
+    formData.append("job_description", jdText.value.trim());
+  } else if (jdFile.files.length > 0) {
+    formData.append("jd_file", jdFile.files[0]);
+  } else {
+    alert("Please paste a job description or upload a file.");
+    return;
+  }
+
+  // ---- 2. RESUME INPUT ----
+  if (!resumeFile.files.length > 0) {
+    alert("Please upload a resume file before scanning.");
+    return;
+  }
+  formData.append("resume_file", resumeFile.files[0]);
+
+  // ---- 3. SHOW & ANIMATE LOADING BAR ----
+  const loadingWrapper = document.getElementById("loadingBarWrapper");
+  const loadingFill = document.getElementById("loadingBarFill");
+
+  loadingWrapper.style.display = "block";
+  loadingFill.style.width = "0%";
+
+  // Start smooth auto animation
+  let progress = 0;
+  let autoProgress = setInterval(() => {
+    progress += 5;
+    if (progress <= 95) {
+      loadingFill.style.width = progress + "%";
+    }
+  }, 120);
+
+  // ---- 4. SEND TO BACKEND ----
+  fetch("http://127.0.0.1:5000/scan_resume", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      clearInterval(autoProgress);
+
+      // Immediately push to 100%
+      loadingFill.style.width = "100%";
+
+      // Delay so user sees the completed bar
+      setTimeout(() => {
+        loadingWrapper.style.display = "none";
+        loadingFill.style.width = "0%";
+      }, 600);
+
+      // ---- DISPLAY RESULTS ----
+      scanDiv.style.display = "block";
+
+      if (data.error) {
+        scanDiv.innerHTML = `<span style="color:red;">${data.error}</span>`;
+        return;
+      }
+
+      scanDiv.innerHTML = `
+        <h3>📊 Resume Match Analysis</h3>
+        <p><strong>Match Score:</strong> ${data.match_score}%</p>
+
+        <p><strong>Matched Keywords:</strong><br>
+          <span style="color:green">${data.matched_keywords.join(", ")}</span>
+        </p>
+
+        <p><strong>Missing Keywords:</strong><br>
+          <span style="color:red">${data.missing_keywords.join(", ")}</span>
+        </p>
+
+        <p><strong>Suggestions:</strong><br>
+          ${data.suggestions}
+        </p>
+      `;
+    })
+    .catch(err => {
+      clearInterval(autoProgress);
+
+      loadingFill.style.width = "100%";
+      setTimeout(() => loadingWrapper.style.display = "none", 600);
+
+      scanDiv.style.display = "block";
+      scanDiv.innerHTML = `
+        <div style="color:red; font-weight:bold;">
+          ⚠️ Failed to scan resume. Check server.
+        </div>
+      `;
+    });
+}
+
+  </script>
+
+<script>
+/* ===========================
+   PERSONAL INFO VALIDATION
+=========================== */
+
+function validatePersonalInfo() {
+
+  const name      = document.getElementById("name").value.trim();
+  const jobTitle  = document.getElementById("job_title").value.trim();
+  const email     = document.getElementById("email").value.trim();
+  const phone     = document.getElementById("phone").value.trim();
+  const address   = document.getElementById("address").value.trim();
+
+  // --- REGEX RULES ---
+  const nameRule  = /^[A-Za-z\s]{5,}$/;
+  const emailRule = /^[A-Za-z0-9._%+-]{3,}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  const phoneRule = /^\+\d{10,}$/;
+
+  // ====================
+  // NAME
+  // ====================
+  if (!nameRule.test(name)) {
+    alert("❌ Name must contain letters only and be at least 5 characters.");
+    document.getElementById("name").focus();
+    return false;
+  }
+
+  // ====================
+  // JOB TITLE
+  // ====================
+  if (!nameRule.test(jobTitle)) {
+    alert("❌ Job Title must contain only letters and be at least 5 characters.");
+    document.getElementById("job_title").focus();
+    return false;
+  }
+
+  // ====================
+  // EMAIL
+  // ====================
+  if (!emailRule.test(email)) {
+    alert("❌ Please enter a valid email address.");
+    document.getElementById("email").focus();
+    return false;
+  }
+
+  // ====================
+  // PHONE NUMBER
+  // ====================
+  if (!phoneRule.test(phone)) {
+    alert("❌ Phone number must start with + and contain at least 10 digits.");
+    document.getElementById("phone").focus();
+    return false;
+  }
+
+  // ====================
+  // ADDRESS
+  // ====================
+  // ====================
+// ADDRESS VALIDATION
+// ====================
+
+// Must be alphanumeric + spaces
+const addressRule = /^[A-Za-z0-9\s]{5,}$/;
+
+// Must NOT be numbers only
+const notNumbersOnly = /[A-Za-z]/;
+
+// Must not be special characters only (already excluded by regex)
+
+if (!addressRule.test(address) || !notNumbersOnly.test(address)) {
+  alert("❌ Address must contain letters and may include numbers, but no special characters or digits only.");
+  document.getElementById("address").focus();
+  return false;
+}
+  return true;
+
+}
+  function validateSummary() {
+  const summary = document.getElementById("summary").value.trim();
+
+  // ✅ Allow normal writing punctuation
+  const rule = /^[A-Za-z0-9\s.,'-]{30,}$/;
+
+  // Must NOT be numbers only
+  const hasLetters = /[A-Za-z]/;
+
+  if (!summary) {
+    alert("❌ Professional Summary cannot be empty.");
+    return false;
+  }
+
+  if (summary.length < 30) {
+    alert("❌ Summary must be at least 30 characters long.");
+    return false;
+  }
+
+  if (!rule.test(summary)) {
+    alert("❌ Summary contains invalid characters.\nAllowed: letters, numbers, spaces, commas, full stops, apostrophes and hyphens only.");
+    return false;
+  }
+
+  if (!hasLetters.test(summary)) {
+    alert("❌ Summary cannot be numbers only.");
+    return false;
+  }
+
+  return true;
+}
+
+  function validateExperience() {
+
+  const blocks = document.querySelectorAll("#experience-container > div");
+
+  if (blocks.length === 0) {
+    alert("❌ Please add at least one work experience entry.");
+    return false;
+  }
+
+  for (let i = 0; i < blocks.length; i++) {
+
+    const title = blocks[i].querySelector(".exp-title")?.value.trim();
+    const company = blocks[i].querySelector(".exp-company")?.value.trim();
+    const location = blocks[i].querySelector(".exp-location")?.value.trim();
+    const start = blocks[i].querySelector(".exp-start")?.value;
+    const end = blocks[i].querySelector(".exp-end")?.value;
+    const description = blocks[i].querySelector(".exp-description")?.value.trim();
+
+    // ===== JOB TITLE =====
+    if (!/^[A-Za-z\s]{5,}$/.test(title)) {
+      alert(`❌ Job Title in Experience #${i+1} must contain only letters (min 5 characters).`);
+      return false;
+    }
+
+    // ===== COMPANY =====
+   if (!/^[A-Za-z0-9\s.,'-]{5,}$/.test(company) || /^\d+$/.test(company)) {
+      alert(`❌ Company in Experience #${i+1} must be alphanumeric and not numbers only (min 5 characters).`);
+      return false;
+    }
+
+    // ===== LOCATION =====
+    if (!/^[A-Za-z0-9\s.,'-]{5,}$/.test(location) || /^\d+$/.test(location)) {
+      alert(`❌ Location in Experience #${i+1} must be alphanumeric and not numbers only (min 5 characters).`);
+      return false;
+    }
+
+    // ===== DATES =====
+    if (!start || !end) {
+      alert(`❌ Start and End dates are required in Experience #${i+1}.`);
+      return false;
+    }
+
+    // ===== DESCRIPTION =====
+    if (description.length < 10) {
+      alert(`❌ Description in Experience #${i+1} must be at least 10 characters.`);
+      return false;
+    }
+
+   if (!/^[A-Za-z0-9\s.,'•\-–\n]+$/.test(description)) {
+      alert(`❌ Invalid characters in Description (Experience #${i+1}).`);
+      return false;
+    }
+
+    if (/^\d+$/.test(description)) {
+      alert(`❌ Description in Experience #${i+1} cannot be numbers only.`);
+      return false;
+    }
+
+  }
+
+  return true;
+}
+
+  function validateEducation() {
+
+  const blocks = document.querySelectorAll("#education-container > div");
+
+  if (blocks.length === 0) {
+    alert("❌ Please add at least one education entry.");
+    return false;
+  }
+
+  for (let i = 0; i < blocks.length; i++) {
+
+    const institution = blocks[i].querySelector(".edu-institution")?.value.trim();
+    const qualification = blocks[i].querySelector(".edu-qualification")?.value.trim();
+    const start = blocks[i].querySelector(".edu-start")?.value.trim();
+    const end = blocks[i].querySelector(".edu-end")?.value.trim();
+
+    // ----------- INSTITUTION -----------
+    if (!institution || institution.length < 3) {
+      alert(`❌ Institution in Education #${i+1} must be at least 3 characters.`);
+      return false;
+    }
+
+    if (!/^[A-Za-z0-9\s]+$/.test(institution)) {
+      alert(`❌ Institution in Education #${i+1} must contain only letters and numbers.`);
+      return false;
+    }
+
+    if (/^\d+$/.test(institution)) {
+      alert(`❌ Institution in Education #${i+1} cannot be numbers only.`);
+      return false;
+    }
+
+   // ----------- QUALIFICATION -----------
+if (!qualification || qualification.length < 5) {
+  alert(`❌ Qualification in Education #${i+1} must be at least 5 characters.`);
+  return false;
+}
+
+// Allow letters, numbers, spaces, and common punctuation like (),-./
+if (!/^[A-Za-z0-9\s\(\)\-\,\.\/]+$/.test(qualification)) {
+  alert(`❌ Qualification in Education #${i+1} contains invalid characters.`);
+  return false;
+}
+
+// Prevent numbers only
+if (/^\d+$/.test(qualification)) {
+  alert(`❌ Qualification in Education #${i+1} cannot be numbers only.`);
+  return false;
+}
+
+  }
+
+  return true;
+}
+
+function validateReferences() {
+
+  const names = document.querySelectorAll(".ref-name");
+  const positions = document.querySelectorAll(".ref-position");
+  const contacts = document.querySelectorAll(".ref-contact");
+
+  const namePattern = /^[A-Za-z\s]{5,}$/;
+  const positionPattern = /^[A-Za-z\s]{5,}$/;
+  const contactPattern = /^\+\d{10,}$/;
+
+  let referenceFound = false;
+
+  for (let i = 0; i < names.length; i++) {
+
+    const name = names[i].value.trim();
+    const position = positions[i].value.trim();
+    const contact = contacts[i].value.trim();
+
+    // Ignore empty deleted blocks
+    if (name === "" && position === "" && contact === "") continue;
+
+    referenceFound = true;
+
+    // ✅ Name
+    if (!namePattern.test(name)) {
+      alert("❌ Invalid Reference Name (letters only, min 5 characters)");
+      names[i].focus();
+      return false;
+    }
+
+    // ✅ Position
+    if (!positionPattern.test(position)) {
+      alert("❌ Invalid Position (letters only, min 5 characters)");
+      positions[i].focus();
+      return false;
+    }
+
+    // ✅ Contact
+    if (!contactPattern.test(contact)) {
+      alert("❌ Invalid Contact (must start with + and at least 10 digits)");
+      contacts[i].focus();
+      return false;
+    }
+  }
+
+  if (!referenceFound) {
+    alert("❌ Please add at least one reference.");
+    names[0].focus();
+    return false;
+  }
+
+  return true;
+}
+
+</script>
+
+<script>
+let currentIndex = 0;
+const cards = document.querySelectorAll(".template-card");
+const track = document.getElementById("sliderTrack");
+
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+    cards.forEach(c => c.classList.remove("active"));
+    card.classList.add("active");
+    currentIndex = [...cards].indexOf(card);
+    refreshSlider();
+  });
+});
+
+function moveSlide(direction) {
+  currentIndex += direction;
+
+  if (currentIndex < 0) currentIndex = cards.length - 1;
+  if (currentIndex >= cards.length) currentIndex = 0;
+
+  cards.forEach(c => c.classList.remove("active"));
+  cards[currentIndex].classList.add("active");
+
+  refreshSlider();
+}
+
+function refreshSlider() {
+  const offset = -(currentIndex * 220);
+  track.style.transform = `translateX(${offset}px)`;
+}
+
+function applySelectedTemplate() {
+  const selected = document.querySelector(".template-card.active").dataset.template;
+  alert("✅ Selected Template: " + selected);
+
+  // STORE FOR BACKEND (hidden field)
+  let input = document.getElementById("selected_template");
+  if (!input) {
+    input = document.createElement("input");
+    input.type = "hidden";
+    input.id = "selected_template";
+    document.body.appendChild(input);
+  }
+  input.value = selected;
+}
+</script>
+<script>
+async function generateAISummary() {
+    const job = document.getElementById("job_title").value;
+
+    if (!job) {
+        alert("Please enter a job title first!");
+        return;
+    }
+
+    const res = await fetch("/ai/generate-summary", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ job_title: job })
+    });
+
+    const data = await res.json();
+    document.getElementById("summary").value = data.summary;
+}
+</script>
+<script>
+function generateSkills() {
+    let jobTitle = document.getElementById("job_title").value;
+
+    if (!jobTitle) {
+        alert("Please enter Job Title first.");
+        return;
+    }
+
+    fetch("/ai/generate-skills", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            job_title: jobTitle
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (!data.skills) {
+            alert("No skills returned from AI");
+            return;
+        }
+
+        let container = document.getElementById("skills-container");
+        container.innerHTML = "";
+
+        let lines = data.skills
+            .replace(/\*/g, "")
+            .split("\n")
+            .filter(line => line.trim() !== "");
+
+        lines.forEach(skill => {
+            let div = document.createElement("div");
+            div.className = "skill-row";
+
+            let input = document.createElement("input");
+            input.type = "text";
+            input.value = skill.replace(/^[-•]/, "").trim();
+
+            let btn = document.createElement("button");
+            btn.innerHTML = "❌";
+            btn.onclick = () => div.remove();
+
+            div.appendChild(input);
+            div.appendChild(btn);
+            container.appendChild(div);
+        });
+
+    })
+    .catch(error => {
+        console.error("AI error:", error);
+        alert("AI request failed");
+    });
+}
+</script>
+<script>
+document.querySelector("form").addEventListener("submit", function(e){
+    const selected = document.getElementById("template").value;
+    alert("Template Selected: " + selected);
+});
+</script>
+<script>
+console.log("generateSkills loaded");
+</script>
+<script>
+// Track selected template
+let selectedTemplate = "template1"; // default
+
+// Handle template card click
+document.querySelectorAll(".template-card").forEach(card => {
+    card.addEventListener("click", function() {
+        // Remove active class from all
+        document.querySelectorAll(".template-card").forEach(c => c.classList.remove("active"));
+        // Add active to clicked card
+        this.classList.add("active");
+        // Update selected template
+        selectedTemplate = this.dataset.template;
+    });
+});
+
+// Apply template button
+function applySelectedTemplate() {
+    if (!selectedTemplate) return alert("Please select a template");
+
+    // Option 1: Open in new tab
+    window.open(`/resume/${selectedTemplate}`, "_blank");
+
+    // Option 2: Embed preview in page (optional)
+    // let container = document.getElementById("resume-preview");
+    // container.innerHTML = `<iframe src="/resume/${selectedTemplate}" width="100%" height="600px"></iframe>`;
+}
+</script>
+
+</body>
+</html>

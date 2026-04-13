@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Resume History</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    /* Header / Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background: #1e3c72;
+      color: white;
+      font-weight: 500;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    tr:hover {
+      background: #e3f0ff;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 2px;
+      font-size: 14px;
+      border-radius: 5px;
+      text-decoration: none;
+      color: white;
+      transition: 0.3s;
+    }
+
+    a.preview {
+      background: #4caf50;
+    }
+
+    a.preview:hover {
+      background: #45a049;
+    }
+
+    a.delete {
+      background: #e74c3c;
+    }
+
+    a.delete:hover {
+      background: #c0392b;
+    }
+
+    /* Links at bottom */
+    .bottom-links {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .bottom-links a {
+      text-decoration: none;
+      color: #1e3c72;
+      font-weight: 500;
+      margin: 0 10px;
+    }
+
+    .bottom-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      th {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        margin: 0 0 15px 0;
+      }
+
+      td {
+        padding-left: 50%;
+        position: relative;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      td:before {
+        position: absolute;
+        top: 12px;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: 500;
+        content: attr(data-label);
+        color: #555;
+      }
+
+      .bottom-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>My Resume History</h1>
+  </section>
+
+  <!-- Container -->
+  <div class="container">
+    {% if resumes %}
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Job Title</th>
+          <th>Template</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for resume in resumes %}
+        <tr>
+          <td data-label="Name">{{ resume.name }}</td>
+          <td data-label="Job Title">{{ resume.job_title }}</td>
+          <td data-label="Template">{{ resume.template }}</td>
+          <td data-label="Created">{{ resume.id }}</td>
+          <td data-label="Actions">
+            <a href="/preview_resume/{{ resume.id }}" class="button preview">Preview</a>
+            <a href="/delete_resume/{{ resume.id }}" class="button delete" onclick="return confirm('Delete this resume?')">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p style="text-align:center; margin-top:20px;">No resumes created yet.</p>
+    {% endif %}
+
+    <div class="bottom-links">
+      <a href="/build_resume">Create New Resume</a> |
+      <a href="/dashboard">Back to Dashboard</a>
+    </div>
+  </div>
+
+</body>
+</html>

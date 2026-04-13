@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Resume Generator (Standalone)</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --accent:#0b61d6;
+    --muted:#6b7280;
+    --bg:#f7f9fc;
+    --card:#fff;
+  }
+  body{font-family:Inter,system-ui,Segoe UI,Arial; margin:0;background:var(--bg); color:#111}
+  .wrap{max-width:1200px;margin:24px auto;padding:18px}
+  header{display:flex;align-items:center;gap:16px}
+  header h1{margin:0;font-size:20px;color:var(--accent)}
+  .grid{display:grid;grid-template-columns:420px 1fr;gap:18px;margin-top:16px}
+  .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(12,24,40,0.06)}
+  label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+  input[type=text], input[type=email], textarea, select{width:100%;padding:8px;border:1px solid #e6e9ee;border-radius:6px;font-size:14px;box-sizing:border-box}
+  textarea{min-height:80px;resize:vertical}
+  .small-row{display:flex;gap:8px}
+  .small-row input{flex:1}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
+  .btn.secondary{background:#fff;color:var(--accent);border:1px solid #e6e9ee}
+  .muted{color:var(--muted);font-size:13px}
+  .templates{display:flex;gap:10px;margin-top:10px}
+  .tpl{flex:1;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px}
+  .tpl.selected{border-color:var(--accent);box-shadow:0 6px 14px rgba(11,97,214,0.12)}
+  .tpl img{width:72px;height:90px;object-fit:cover;border-radius:4px}
+  .tpl .meta{font-size:14px}
+  .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .preview-wrap{display:flex;flex-direction:column;height:80vh}
+  .preview-frame{flex:1;border-radius:8px;overflow:auto;border:1px solid #e6e9ee}
+  /* inside preview templates styling */
+  .resume-preview{padding:26px;font-family:Inter,Arial;color:#222;background:#fff;min-height:1100px}
+  .r-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--accent);padding-bottom:8px;margin-bottom:10px}
+  .r-name{color:var(--accent);font-size:24px;margin:0}
+  .r-title{color:#333;margin:0;font-size:14px}
+  .r-contact{font-size:13px;color:var(--muted)}
+  .section-title{color:var(--accent);text-transform:uppercase;font-size:12px;margin-top:14px;border-bottom:1px solid #eee;padding-bottom:6px}
+  ul.clean{margin:6px 0 0 18px}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .template-modern .r-header{border-bottom:none}
+  .template-modern .left-col{background:#f1f7ff;padding:12px;border-radius:8px}
+  @media (max-width:920px){ .grid{grid-template-columns:1fr} .preview-wrap{height:60vh} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Resume Generator (Standalone)</h1>
+    <div class="muted">Clean, presentation-ready resumes — no database required</div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT: FORM -->
+    <div>
+      <div class="card">
+        <h3>Personal</h3>
+        <label>Name</label>
+        <input id="name" type="text" placeholder="Full name (min 3 letters)">
+
+        <label>Email</label>
+        <input id="email" type="email" placeholder="name@example.com">
+
+        <label>Phone</label>
+        <input id="phone" type="text" placeholder="+263712345678">
+
+        <label>Address</label>
+        <input id="address" type="text" placeholder="City, Country">
+
+        <label>Job Title</label>
+        <input id="job_title" type="text" placeholder="e.g. Construction Assistant">
+
+        <label>Professional Summary</label>
+        <textarea id="summary" placeholder="A short professional paragraph (>=30 chars)"></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" id="btnGenerateLive">Update Preview</button>
+          <button class="btn secondary" id="btnClear">Clear</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Experience</h3>
+        <div id="xp-list"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" onclick="addExp()">➕ Add Experience</button>
+          <button class="btn secondary" onclick="removeLastExp()">Remove Last</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Education</h3>
+        <div id="edu-list"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" onclick="addEdu()">➕ Add Education</button>
+          <button class="btn secondary" onclick="removeLastEdu()">Remove Last</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Extras</h3>
+        <label>Skills (comma separated)</label>
+        <input id="skills" placeholder="e.g. team work, masonry, safety">
+
+        <label>Languages (comma separated)</label>
+        <input id="languages" placeholder="English, Shona">
+
+        <label>References (name - contact) one per line</label>
+        <textarea id="references" placeholder="Jane Doe - +2637..."></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center;justify-content:flex-end">
+          <select id="preset" style="padding:8px;border-radius:8px">
+            <option value="">Load sample</option>
+            <option value="sample1">Construction Worker (sample)</option>
+            <option value="sample2">Software Engineer (sample)</option>
+          </select>
+          <button class="btn" id="btnFill">Fill Sample</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Template</h3>
+        <div class="templates">
+          <div class="tpl selected" data-template="classic" id="tpl-classic" onclick="pickTpl(this)">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='200'><rect width='100%' height='100%' fill='%23ffffff'/><text x='12' y='28' font-size='12' fill='%230b61d6'>Classic</text></svg>">
+            <div class="meta"><strong>Classic</strong><div class="muted">Two-column, conservative</div></div>
+          </div>
+
+          <div class="tpl" data-template="modern" id="tpl-modern" onclick="pickTpl(this)">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='200'><rect width='100%' height='100%' fill='%23f1f7ff'/><text x='12' y='28' font-size='12' fill='%230b61d6'>Modern</text></svg>">
+            <div class="meta"><strong>Modern</strong><div class="muted">Single column, colorful sidebar</div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="btnPreview">Preview</button>
+          <button class="btn" id="btnDownload">Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PREVIEW -->
+    <div class="preview-wrap">
+      <div class="card preview-frame" id="previewFrame" aria-live="polite">
+        <!-- preview is injected here -->
+      </div>
+
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn secondary" id="btnOpenNew">Open Preview in New Tab</button>
+        <div class="muted" style="align-self:center">Tip: Use Save as PDF in Print dialog</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Simple model & helpers ---------- */
+let chosenTemplate = 'classic';
+
+function el(tag, attrs={}, inner=''){ const e=document.createElement(tag); for(let k in attrs) e.setAttribute(k,attrs[k]); e.innerHTML=inner; return e;}
+
+/* ---------- dynamic lists ---------- */
+function addExp(data={role:'',company:'',start:'',end:'',desc:''}) {
+  const id = 'xp-'+Date.now();
+  const div = el('div',{class:'card', style:'margin-top:8px;padding:10px'});
+  div.innerHTML = `
+    <label>Role</label><input class="xp-role" placeholder="Role" value="${escapeHtml(data.role)}">
+    <label>Company / Location</label><input class="xp-company" value="${escapeHtml(data.company)}">
+    <div class="small-row"><input class="xp-start" placeholder="Start (e.g. Jan 2021)" value="${escapeHtml(data.start)}"><input class="xp-end" placeholder="End (e.g. Dec 2022)" value="${escapeHtml(data.end)}"></div>
+    <label>Description (bullet lines)</label><textarea class="xp-desc" placeholder="Each bullet on new line">${escapeHtml(data.desc)}</textarea>
+  `;
+  document.getElementById('xp-list').appendChild(div);
+}
+
+function removeLastExp(){ const p=document.getElementById('xp-list'); if(p.lastChild) p.removeChild(p.lastChild); }
+
+function addEdu(d={school:'',degree:'',start:'',end:'',desc:''}){
+  const div = el('div',{class:'card', style:'margin-top:8px;padding:10px'});
+  div.innerHTML = `
+    <label>Institution</label><input class="edu-inst" value="${escapeHtml(d.school)}">
+    <label>Qualification</label><input class="edu-degree" value="${escapeHtml(d.degree)}">
+    <div class="small-row"><input class="edu-start" placeholder="Start" value="${escapeHtml(d.start)}"><input class="edu-end" placeholder="End" value="${escapeHtml(d.end)}"></div>
+    <label>Description (optional)</label><textarea class="edu-desc">${escapeHtml(d.desc)}</textarea>
+  `;
+  document.getElementById('edu-list').appendChild(div);
+}
+function removeLastEdu(){ const p=document.getElementById('edu-list'); if(p.lastChild) p.removeChild(p.lastChild); }
+
+/* ---------- template picker ---------- */
+function pickTpl(node){
+  document.querySelectorAll('.tpl').forEach(t=>t.classList.remove('selected'));
+  node.classList.add('selected');
+  chosenTemplate = node.dataset.template;
+}
+
+/* ---------- validation ---------- */
+function validateAll(){
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const job = document.getElementById('job_title').value.trim();
+  const summary = document.getElementById('summary').value.trim();
+
+  if(name.length < 3) { alert('Name must be at least 3 characters'); return false; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Enter a valid email'); return false; }
+  if(job.length < 2) { alert('Job title required'); return false; }
+  if(summary.length < 30) { alert('Summary should be at least 30 characters'); return false; }
+
+  // At least one experience or education or skills
+  if(document.querySelectorAll('#xp-list .xp-role').length===0 &&
+     document.querySelectorAll('#edu-list .edu-inst').length===0 &&
+     document.getElementById('skills').value.trim()===''){
+    if(!confirm('No Experience, Education or Skills entered. Continue?')) return false;
+  }
+
+  return true;
+}
+
+/* ---------- build preview HTML ---------- */
+function buildPreviewHtml(){
+  // read values
+  const name = escapeHtml(document.getElementById('name').value.trim()||'Full Name');
+  const email = escapeHtml(document.getElementById('email').value.trim()||'email@example.com');
+  const phone = escapeHtml(document.getElementById('phone').value.trim()||'');
+  const address = escapeHtml(document.getElementById('address').value.trim()||'');
+  const job = escapeHtml(document.getElementById('job_title').value.trim()||'Job Title');
+  const summary = nl2br(escapeHtml(document.getElementById('summary').value.trim()||''));
+
+  const skills = document.getElementById('skills').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const languages = document.getElementById('languages').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const refs = document.getElementById('references').value.split('\n').map(s=>s.trim()).filter(Boolean);
+
+  const xpBlocks = Array.from(document.querySelectorAll('#xp-list .card')).map(b=>{
+    return {
+      role: b.querySelector('.xp-role').value.trim(),
+      company: b.querySelector('.xp-company').value.trim(),
+      start: b.querySelector('.xp-start').value.trim(),
+      end: b.querySelector('.xp-end').value.trim(),
+      desc: b.querySelector('.xp-desc').value.split('\n').map(s=>s.trim()).filter(Boolean)
+    };
+  });
+
+  const eduBlocks = Array.from(document.querySelectorAll('#edu-list .card')).map(b=>{
+    return {
+      inst: b.querySelector('.edu-inst').value.trim(),
+      degree: b.querySelector('.edu-degree').value.trim(),
+      start: b.querySelector('.edu-start').value.trim(),
+      end: b.querySelector('.edu-end').value.trim(),
+      desc: b.querySelector('.edu-desc').value.trim()
+    };
+  });
+
+  // two templates
+  if(chosenTemplate==='classic'){
+    const html = `
+      <div class="resume-preview template-classic">
+        <div class="r-header">
+          <div>
+            <h2 class="r-name">${name}</h2>
+            <div class="r-title">${job}</div>
+          </div>
+          <div class="r-contact">
+            ${email}${phone?'<br>'+phone:''}${address?'<br>'+address:''}
+          </div>
+        </div>
+
+        <div>
+          <div class="section-title">Professional Summary</div>
+          <p style="margin:6px 0">${summary}</p>
+
+          ${xpBlocks.length?`<div class="section-title">Experience</div>`:''}
+          ${xpBlocks.map(x=>`
+            <div style="margin-top:8px">
+              <div style="font-weight:600">${escapeHtml(x.role)} — <span style="font-weight:400">${escapeHtml(x.company)}</span></div>
+              <div style="font-style:italic;font-size:12px;margin-bottom:6px">${escapeHtml(x.start)} ${x.end? ' – '+escapeHtml(x.end):''}</div>
+              ${x.desc && x.desc.length?'<ul class="clean">'+ x.desc.map(d=>`<li>${escapeHtml(d)}</li>`).join('') +'</ul>':''}
+            </div>`).join('')}
+
+          ${eduBlocks.length?`<div class="section-title">Education</div>`: ''}
+          ${eduBlocks.map(e=>`
+            <div style="margin-top:8px">
+              <div style="font-weight:600">${escapeHtml(e.degree)} <span style="font-weight:400">${escapeHtml(e.inst)}</span></div>
+              <div style="font-style:italic;font-size:12px">${escapeHtml(e.start)} ${e.end? ' – '+escapeHtml(e.end):''}</div>
+              ${e.desc?'<div style="margin-top:6px">'+escapeHtml(e.desc)+'</div>':''}
+            </div>`).join('')}
+
+          <div class="section-title">Skills & Languages</div>
+          <div style="display:flex;gap:12px">
+            <div><strong>Skills:</strong> ${skills.join(', ') || '—'}</div>
+            <div><strong>Languages:</strong> ${languages.join(', ') || '—'}</div>
+          </div>
+
+          ${refs.length?`<div class="section-title">References</div><div>${refs.map(r=>'<div>'+escapeHtml(r)+'</div>').join('')}</div>`:''}
+        </div>
+      </div>
+    `;
+    return html;
+  } else {
+    // modern template with sidebar
+    const leftCol = `
+      <div class="left-col">
+        <h2 style="margin:0">${name}</h2>
+        <div style="font-weight:600;color:#0b61d6">${job}</div>
+        <div style="margin-top:12px" class="r-contact">${email}<br>${phone}<br>${address}</div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700;color:#0b61d6;margin-bottom:6px">Skills</div>
+          <div>${skills.join('<br>') || '—'}</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700;color:#0b61d6;margin-bottom:6px">Languages</div>
+          <div>${languages.join('<br>') || '—'}</div>
+        </div>
+      </div>
+    `;
+
+    const rightCol = `
+      <div>
+        <div style="margin-bottom:8px">${summary}</div>
+
+        ${xpBlocks.length?`<div class="section-title">Experience</div>`:''}
+        ${xpBlocks.map(x=>`
+          <div style="margin-top:8px">
+            <div style="font-weight:600">${escapeHtml(x.role)}</div>
+            <div style="font-size:12px;color:var(--muted)">${escapeHtml(x.company)} — ${escapeHtml(x.start)} ${x.end? ' – '+escapeHtml(x.end):''}</div>
+            ${x.desc && x.desc.length?'<ul class="clean">'+ x.desc.map(d=>`<li>${escapeHtml(d)}</li>`).join('') +'</ul>':''}
+          </div>`).join('')}
+
+        ${eduBlocks.length? `<div class="section-title">Education</div>`: ''}
+        ${eduBlocks.map(e=>`
+          <div style="margin-top:8px"><div style="font-weight:600">${escapeHtml(e.degree) || ''}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(e.inst)} ${e.start? ' — '+escapeHtml(e.start):''} ${e.end? ' – '+escapeHtml(e.end):''}</div></div>`).join('')}
+      </div>
+    `;
+
+    return `<div class="resume-preview template-modern" style="display:grid;grid-template-columns:1fr 2fr;gap:12px"><div class="left-col">${leftCol}</div><div style="padding-left:6px">${rightCol}</div></div>`;
+  }
+}
+
+/* ---------- render & actions ---------- */
+function renderPreview(){
+  if(!validateAll()) return;
+  const html = buildPreviewHtml();
+  const frame = document.getElementById('previewFrame');
+  frame.innerHTML = html;
+  // scroll to top of preview
+  frame.scrollTop = 0;
+}
+
+function openInNewTab(){
+  const html = `<html><head><meta charset="utf-8"><title>Preview</title><style>body{margin:0;font-family:Inter,Arial;padding:18px;background:#f7f9fc}</style></head><body>${buildPreviewHtml()}</body></html>`;
+  const w = window.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function downloadPdf(){
+  // open new tab and print (user chooses Save as PDF)
+  const html = `<html><head><meta charset="utf-8"><title>Resume</title><style>body{margin:0;font-family:Inter,Arial;padding:18px;background:#fff}</style></head><body>${buildPreviewHtml()}</body></html>`;
+  const w = window.open();
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>{ w.print(); }, 600);
+}
+
+/* ---------- helpers ---------- */
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+function nl2br(s){ return s.replace(/\n/g,'<br>'); }
+
+/* ---------- UI wiring ---------- */
+document.getElementById('btnGenerateLive').addEventListener('click', renderPreview);
+document.getElementById('btnPreview').addEventListener('click', renderPreview);
+document.getElementById('btnOpenNew').addEventListener('click', openInNewTab);
+document.getElementById('btnDownload').addEventListener('click', downloadPdf);
+document.getElementById('btnClear').addEventListener('click', ()=>{
+  if(!confirm('Clear all fields?')) return;
+  document.querySelectorAll('input[type=text], textarea').forEach(i=>i.value='');
+  document.getElementById('xp-list').innerHTML=''; document.getElementById('edu-list').innerHTML='';
+  renderPreview();
+});
+document.getElementById('btnFill').addEventListener('click', ()=>{
+  const v = document.getElementById('preset').value;
+  if(v==='sample1'){
+    document.getElementById('name').value='Tawanda Satiyi';
+    document.getElementById('email').value='tawazsatiyi@outlook.com';
+    document.getElementById('phone').value='+263712345678';
+    document.getElementById('job_title').value='Construction Assistant Worker';
+    document.getElementById('address').value='Mutare, Zimbabwe';
+    document.getElementById('summary').value='Highly motivated construction worker with a strong commitment to safety, efficiency, and quality on the job site. Skilled in following instructions, working in teams, and adapting to various tasks within construction projects.';
+    document.getElementById('skills').value='Masonry,Teamwork,Safety';
+    document.getElementById('languages').value='English,Shona';
+    document.getElementById('references').value='John Foreman - +2637...';
+    document.getElementById('xp-list').innerHTML=''; document.getElementById('edu-list').innerHTML='';
+    addExp({role:'Construction Assistant Worker', company:'Expeteers pvt ltd – Mutare, Zimbabwe', start:'Jan 2021', end:'Dec 2021', desc:'Assisted in site preparation and cleanup.\nOperated basic tools and helped with material installation.'});
+    addEdu({school:'Marange High School', degree:'ZGCE O Level', start:'2013', end:'2016'});
+  } else if(v==='sample2'){
+    document.getElementById('name').value='Ava Developer';
+    document.getElementById('email').value='ava.dev@example.com';
+    document.getElementById('job_title').value='Software Engineer';
+    document.getElementById('summary').value='Full-stack engineer with experience building web applications using Python, Flask, and React. Skilled in API design and automation.';
+    document.getElementById('skills').value='Python,Flask,JavaScript,SQL';
+    document.getElementById('languages').value='English';
+    document.getElementById('xp-list').innerHTML=''; document.getElementById('edu-list').innerHTML='';
+    addExp({role:'Software Engineer', company:'Makerei Tech – Harare, Zimbabwe', start:'Feb 2020', end:'Present', desc:'Designed APIs and web apps.\nBuilt CI/CD pipelines.'});
+    addEdu({school:'National University', degree:'BSc Computer Science', start:'2016', end:'2019'});
+  }
+  renderPreview();
+});
+
+/* initial sample boxes */
+addExp(); addEdu();
+renderPreview();
+
+</script>
+</body>
+</html>

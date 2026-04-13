@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reset Link Generated</title>
+
+<link rel="stylesheet" href="/static/css/auth_ui.css"> <!-- optional -->
+</head>
+
+<body>
+
+<div class="reset-box">
+
+  <h2>✅ Reset Link Generated</h2>
+
+  <p>
+    A password reset link has been created for:
+  </p>
+
+  <strong>{{ email }}</strong>
+
+  <div class="link-container">
+    <p>Your reset link:</p>
+    <a href="{{ reset_url }}">{{ reset_url }}</a>
+
+    <a href="{{ reset_url }}" class="reset-link"><br>
+      🔐 Click here to reset your password
+    </a>
+  </div>
+
+  <p class="note">
+    *This link expires after a short time for security.*
+  </p>
+
+  <a href="{{ url_for('auth.login') }}" class="back-btn">
+    ← Back to Login
+  </a>
+
+</div>
+
+</body>
+</html>
